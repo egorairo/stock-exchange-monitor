@@ -50,9 +50,9 @@ export const StockMonitor: React.FC<StockMonitorProps> = ({
         Stock Exchange Monitor
       </h1>
 
-      <div className="flex flex-col md:flex-row gap-8 w-full">
-        <div className="w-full max-w-[480px] h-full">
-          <div className="stock-card p-4">
+      <div className="flex flex-col lg:flex-row gap-8 w-full">
+        <div className="w-full lg:max-w-[480px] h-full">
+          <div className="stock-card p-4 h-full">
             {loading ? (
               <StockListSkeleton />
             ) : (
@@ -77,7 +77,7 @@ export const StockMonitor: React.FC<StockMonitorProps> = ({
 
         <div className="w-full">
           {selectedSymbol ? (
-            <div className="stock-card p-4">
+            <div className="stock-card p-4 h-full">
               <StockChart symbol={selectedSymbol} />
             </div>
           ) : (

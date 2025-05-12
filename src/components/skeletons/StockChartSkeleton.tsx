@@ -2,7 +2,7 @@ import React from 'react'
 
 export const StockChartSkeleton: React.FC = () => {
   return (
-    <div className="w-full h-[830px] animate-pulse">
+    <div className="w-full h-full animate-pulse">
       <div className="flex justify-between items-center mb-6">
         <div className="h-7 w-48 bg-neutral-800 rounded"></div>
         <div className="flex gap-3">
@@ -12,7 +12,7 @@ export const StockChartSkeleton: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative h-[760px] w-full p-4 border border-neutral-700 rounded-lg bg-neutral-900/20">
+      <div className="relative h-9/10 w-full p-4 border border-neutral-700 rounded-lg bg-neutral-900/20">
         <div className="absolute left-0 top-0 bottom-0 w-12 flex flex-col justify-between py-6">
           <div className="h-4 w-10 bg-neutral-800 rounded"></div>
           <div className="h-4 w-8 bg-neutral-800 rounded"></div>

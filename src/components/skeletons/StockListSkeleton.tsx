@@ -12,7 +12,7 @@ export const StockListSkeleton: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-h-[700px] overflow-y-auto h-full">
+      <div className="max-h-[540px] overflow-y-auto h-full">
         {Array.from({length: 10}).map((_, index) => (
           <div
             key={index}

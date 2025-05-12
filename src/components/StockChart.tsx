@@ -60,7 +60,7 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
   const options = useMemo(() => {
     return {
       chart: {
-        height: 798,
+        height: '100%',
         style: {
           fontFamily: 'Inter, system-ui, sans-serif',
         },
@@ -302,7 +302,7 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
 
   if (error) {
     return (
-      <div className="text-center p-4 text-red-600 h-[760px]">
+      <div className="flex items-center justify-center text-center p-4 h-full text-red-600">
         {error}
       </div>
     )
@@ -310,14 +310,14 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
 
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="text-center p-4 h-[760px]">
+      <div className="flex items-center justify-center text-center p-4 h-full">
         No chart data available
       </div>
     )
   }
 
   return (
-    <div className="mt-8">
+    <div className="mt-4">
       <HighchartsWrapper
         options={options}
         constructorType={'stockChart'}

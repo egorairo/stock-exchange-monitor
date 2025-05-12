@@ -100,7 +100,7 @@ export const StockList: React.FC<StockListProps> = ({
         </div>
       </div>
 
-      <div className="max-h-[700px] overflow-y-auto h-full">
+      <div className="max-h-[540px] overflow-y-auto h-full">
         {stocks.length === 0 ? (
           <div className="text-center p-4 text-neutral-400">
             No stocks found
