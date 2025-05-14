@@ -2,17 +2,10 @@ import React from 'react'
 
 export const StockListSkeleton: React.FC = () => {
   return (
-    <div className="w-full animate-pulse h-full">
-      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between gap-2">
-        <div className="h-10 bg-neutral-800 border border-neutral-700 rounded w-full sm:w-64"></div>
-        <div className="flex gap-2">
-          <div className="h-10 w-16 bg-neutral-800 border border-neutral-700 rounded"></div>
-          <div className="h-10 w-24 bg-neutral-800 border border-neutral-700 rounded"></div>
-          <div className="h-10 w-24 bg-neutral-800 border border-neutral-700 rounded"></div>
-        </div>
-      </div>
+    <div className="w-full animate-pulse h-full pt-2">
+      <div className="h-4 bg-neutral-800 border border-neutral-700 rounded w-60 mb-3"></div>
 
-      <div className="max-h-[540px] overflow-y-auto h-full">
+      <div className="max-h-[540px] min-h-[540px] overflow-y-auto h-full">
         {Array.from({length: 10}).map((_, index) => (
           <div
             key={index}

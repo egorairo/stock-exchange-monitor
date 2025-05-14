@@ -5,6 +5,7 @@ import {StockItem} from './StockItem'
 import {Stock} from '@/lib/types/stock'
 import {StockFilter} from '@/lib/types/stock'
 import {Pagination} from './Pagination'
+import {StockListSkeleton} from './skeletons/StockListSkeleton'
 
 interface StockListProps {
   stocks: Stock[]
@@ -38,6 +39,7 @@ export const StockList: React.FC<StockListProps> = ({
   selectedSymbol,
   onSelectStock,
   pagination,
+  loading,
   onPageChange,
   onPageSizeChange,
 }) => {
@@ -55,8 +57,32 @@ export const StockList: React.FC<StockListProps> = ({
     )
   }
 
+  const renderFilterInfo = () => {
+    if (!pagination) return null
+
+    const {totalItems, pageSize, currentPage} = pagination
+    const start = (currentPage - 1) * pageSize + 1
+    const end = Math.min(currentPage * pageSize, totalItems)
+
+    if (totalItems === 0) {
+      return (
+        <div className="text-sm text-neutral-400 mt-2">
+          No stocks found with the current filter/search criteria
+        </div>
+      )
+    }
+
+    return (
+      <div className="text-sm text-neutral-400 my-2">
+        Showing {start}-{end} of {totalItems} stocks
+        {searchQuery && ` matching "${searchQuery}"`}
+        {filter !== StockFilter.ALL && ` (${filter.toLowerCase()})`}
+      </div>
+    )
+  }
+
   return (
-    <div className="w-full h-full">
+    <div className="relative w-full h-full">
       <div className="mb-4 flex flex-col sm:flex-row sm:justify-between gap-2">
         <input
           type="text"
@@ -69,6 +95,7 @@ export const StockList: React.FC<StockListProps> = ({
         <div className="flex gap-2">
           <button
             onClick={() => onFilterChange(StockFilter.ALL)}
+            disabled={loading}
             className={`px-3 py-2 rounded transition-colors cursor-pointer ${
               filter === StockFilter.ALL
                 ? 'bg-primary text-white'
@@ -79,6 +106,7 @@ export const StockList: React.FC<StockListProps> = ({
           </button>
           <button
             onClick={() => onFilterChange(StockFilter.GROWING)}
+            disabled={loading}
             className={`px-3 py-2 rounded transition-colors bg-neutral-800 cursor-pointer ${
               filter === StockFilter.GROWING
                 ? 'bg-success text-white'
@@ -89,6 +117,7 @@ export const StockList: React.FC<StockListProps> = ({
           </button>
           <button
             onClick={() => onFilterChange(StockFilter.FALLING)}
+            disabled={loading}
             className={`px-3 py-2 rounded transition-colors cursor-pointer ${
               filter === StockFilter.FALLING
                 ? 'bg-danger text-white'
@@ -100,51 +129,59 @@ export const StockList: React.FC<StockListProps> = ({
         </div>
       </div>
 
-      <div className="max-h-[540px] overflow-y-auto h-full">
-        {stocks.length === 0 ? (
-          <div className="text-center p-4 text-neutral-400">
-            No stocks found
+      {loading ? (
+        <StockListSkeleton />
+      ) : (
+        <>
+          {renderFilterInfo()}
+
+          <div className="max-h-[540px] min-h-[540px] overflow-y-auto h-full">
+            {stocks.length === 0 ? (
+              <div className="text-center p-4 text-neutral-400">
+                No stocks found
+              </div>
+            ) : (
+              stocks.map((stock) => (
+                <StockItem
+                  key={stock.symbol}
+                  stock={stock}
+                  onSelect={onSelectStock}
+                  isSelected={selectedSymbol === stock.symbol}
+                />
+              ))
+            )}
           </div>
-        ) : (
-          stocks.map((stock) => (
-            <StockItem
-              key={stock.symbol}
-              stock={stock}
-              onSelect={onSelectStock}
-              isSelected={selectedSymbol === stock.symbol}
-            />
-          ))
-        )}
-      </div>
 
-      {pagination && onPageChange && (
-        <div className="mt-4 flex flex-col sm:flex-row justify-between items-end">
-          <Pagination
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
-            onPageChange={onPageChange}
-          />
+          {pagination && onPageChange && (
+            <div className="mt-4 flex flex-col sm:flex-row justify-between items-end">
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                onPageChange={onPageChange}
+              />
 
-          {onPageSizeChange && (
-            <div className="flex items-center mt-2 sm:mt-0">
-              <span className="mr-2 text-neutral-400 text-sm">
-                Items per page:
-              </span>
-              <select
-                value={pagination?.pageSize}
-                onChange={(e) =>
-                  onPageSizeChange(Number(e.target.value))
-                }
-                className="border border-neutral-700 rounded px-2 py-1 text-sm bg-neutral-800 text-neutral-100"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
+              {onPageSizeChange && (
+                <div className="flex items-center mt-2 sm:mt-0">
+                  <span className="mr-2 text-neutral-400 text-sm whitespace-nowrap">
+                    Items:
+                  </span>
+                  <select
+                    value={pagination?.pageSize}
+                    onChange={(e) =>
+                      onPageSizeChange(Number(e.target.value))
+                    }
+                    className="border border-neutral-700 rounded px-2 py-1 text-sm bg-neutral-800 text-neutral-100"
+                  >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                </div>
+              )}
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   )

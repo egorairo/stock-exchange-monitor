@@ -1,48 +1,48 @@
-export interface SymbolLookupResult {
-  count: number
-  result: SymbolSearchResult[]
-}
-
 export interface SymbolSearchResult {
-  description: string
-  displaySymbol: string
   symbol: string
-  type: string
-}
-
-export interface StockSymbol {
+  name: string
   currency: string
-  description: string
-  displaySymbol: string
-  figi: string
-  mic: string
-  symbol: string
+  exchange: string
+  mic_code: string
+  country: string
   type: string
 }
-
-export interface MarketStatus {
+export interface StockSymbol {
+  symbol: string
+  name: string
+  currency: string
   exchange: string
-  holiday: string | null
-  isOpen: boolean
-  session: string
-  timezone: string
-  t: number
+  mic_code: string
+  country: string
+  type: string
+  figi_code?: string
+  cfi_code?: string
+  isin?: string
 }
 
 export interface StockQuote {
-  c: number // Current price
-  d: number // Change
-  dp: number // Percent change
-  h: number // High price of the day
-  l: number // Low price of the day
-  o: number // Open price of the day
-  pc: number // Previous close price
-  t: number // Timestamp
+  symbol: string
+  name: string
+  exchange: string
+  mic_code: string
+  currency: string
+  datetime: string
+  timestamp: number
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+  previous_close: number
+  change: number
+  percent_change: number
+  is_market_open: boolean
 }
 
 export interface Stock {
   symbol: string
-  description: string
+  name: string
+  exchange: string
   currentPrice: number
   previousClose: number
   openPrice: number
@@ -52,22 +52,76 @@ export interface Stock {
 }
 
 export interface CandleData {
-  c: number[] // Close prices
-  h: number[] // High prices
-  l: number[] // Low prices
-  o: number[] // Open prices
-  s: string // Status
-  t: number[] // Timestamps
-  v: number[] // Volumes
+  meta: {
+    symbol: string
+    interval: string
+    currency: string
+    exchange_timezone: string
+    exchange: string
+    mic_code: string
+    type: string
+  }
+  values: {
+    datetime: string
+    open: number
+    high: number
+    low: number
+    close: number
+    volume: number
+  }[]
+  status: string
+}
+
+export interface RSIData {
+  meta: {
+    symbol: string
+    interval: string
+    indicator: {
+      name: string
+      series_type: string
+      time_period: number
+    }
+  }
+  values: {
+    datetime: string
+    rsi: number
+  }[]
+  status: string
+}
+
+export interface MACDData {
+  meta: {
+    symbol: string
+    interval: string
+    indicator: {
+      name: string
+      fast_period: number
+      series_type: string
+      signal_period: number
+      slow_period: number
+    }
+  }
+  values: {
+    datetime: string
+    macd: number
+    macd_signal: number
+    macd_hist: number
+  }[]
+  status: string
 }
 
 export interface ChartDataPoint {
-  time: number
+  datetime: string
+  timestamp: number
   open: number
   high: number
   low: number
   close: number
   volume: number
+  rsi?: number
+  macd?: number
+  macd_signal?: number
+  macd_hist?: number
 }
 
 export enum StockFilter {

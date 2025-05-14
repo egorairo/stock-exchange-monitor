@@ -1,4 +1,3 @@
-// components/HighchartsWrapper.tsx
 'use client'
 
 import {useEffect, useState, useRef} from 'react'
@@ -95,7 +94,7 @@ export default function HighchartsWrapper({
 
   if (error) {
     return (
-      <div className="h-[862px] flex items-center justify-center text-red-500">
+      <div className="h-[682px] flex items-center justify-center text-red-500">
         Error loading chart: {error}
       </div>
     )
@@ -103,7 +102,7 @@ export default function HighchartsWrapper({
 
   if (!isLoaded) {
     return (
-      <div className="h-[862px] flex items-center justify-center">
+      <div className="h-[682px] flex items-center justify-center">
         Loading chart...
       </div>
     )

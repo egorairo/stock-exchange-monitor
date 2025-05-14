@@ -1,602 +1,614 @@
-import {StockQuote, StockSymbol, CandleData} from '../types/stock'
+import {
+  StockQuote,
+  StockSymbol,
+  CandleData,
+  RSIData,
+  MACDData,
+} from '../types/stock'
 
 const MOCK_STOCKS: StockSymbol[] = [
   {
     symbol: 'AAPL',
-    description: 'Apple Inc.',
-    displaySymbol: 'AAPL',
+    name: 'Apple Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'MSFT',
-    description: 'Microsoft Corporation',
-    displaySymbol: 'MSFT',
+    name: 'Microsoft Corporation',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'GOOGL',
-    description: 'Alphabet Inc.',
-    displaySymbol: 'GOOGL',
+    name: 'Alphabet Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'AMZN',
-    description: 'Amazon.com Inc.',
-    displaySymbol: 'AMZN',
+    name: 'Amazon.com Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'META',
-    description: 'Meta Platforms, Inc.',
-    displaySymbol: 'META',
+    name: 'Meta Platforms, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'TSLA',
-    description: 'Tesla, Inc.',
-    displaySymbol: 'TSLA',
+    name: 'Tesla, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'NVDA',
-    description: 'NVIDIA Corporation',
-    displaySymbol: 'NVDA',
+    name: 'NVIDIA Corporation',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'JPM',
-    description: 'JPMorgan Chase & Co.',
-    displaySymbol: 'JPM',
+    name: 'JPMorgan Chase & Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'BAC',
-    description: 'Bank of America Corporation',
-    displaySymbol: 'BAC',
+    name: 'Bank of America Corporation',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'WMT',
-    description: 'Walmart Inc.',
-    displaySymbol: 'WMT',
+    name: 'Walmart Inc.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'PG',
-    description: 'Procter & Gamble Co.',
-    displaySymbol: 'PG',
+    name: 'Procter & Gamble Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'DIS',
-    description: 'Walt Disney Co.',
-    displaySymbol: 'DIS',
+    name: 'Walt Disney Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'NFLX',
-    description: 'Netflix, Inc.',
-    displaySymbol: 'NFLX',
+    name: 'Netflix, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'XOM',
-    description: 'Exxon Mobil Corporation',
-    displaySymbol: 'XOM',
+    name: 'Exxon Mobil Corporation',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
     symbol: 'JNJ',
-    description: 'Johnson & Johnson',
-    displaySymbol: 'JNJ',
+    name: 'Johnson & Johnson',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'V',
-    description: 'Visa Inc.',
-    displaySymbol: 'V',
+    symbol: 'TSLA',
+    name: 'Tesla, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'MA',
-    description: 'Mastercard Incorporated',
-    displaySymbol: 'MA',
+    symbol: 'NVDA',
+    name: 'NVIDIA Corporation',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'PFE',
-    description: 'Pfizer Inc.',
-    displaySymbol: 'PFE',
+    symbol: 'JPM',
+    name: 'JPMorgan Chase & Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'CSCO',
-    description: 'Cisco Systems, Inc.',
-    displaySymbol: 'CSCO',
+    symbol: 'BAC',
+    name: 'Bank of America Corporation',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'INTC',
-    description: 'Intel Corporation',
-    displaySymbol: 'INTC',
+    symbol: 'WMT',
+    name: 'Walmart Inc.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'CRM',
-    description: 'Salesforce, Inc.',
-    displaySymbol: 'CRM',
+    symbol: 'PG',
+    name: 'Procter & Gamble Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'AMD',
-    description: 'Advanced Micro Devices, Inc.',
-    displaySymbol: 'AMD',
+    symbol: 'DIS',
+    name: 'Walt Disney Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'PYPL',
-    description: 'PayPal Holdings, Inc.',
-    displaySymbol: 'PYPL',
+    symbol: 'NFLX',
+    name: 'Netflix, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'ADBE',
-    description: 'Adobe Inc.',
-    displaySymbol: 'ADBE',
+    symbol: 'XOM',
+    name: 'Exxon Mobil Corporation',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'COST',
-    description: 'Costco Wholesale Corporation',
-    displaySymbol: 'COST',
+    symbol: 'JNJ',
+    name: 'Johnson & Johnson',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'NKE',
-    description: 'Nike, Inc.',
-    displaySymbol: 'NKE',
+    symbol: 'TSLA',
+    name: 'Tesla, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'UNH',
-    description: 'UnitedHealth Group Incorporated',
-    displaySymbol: 'UNH',
+    symbol: 'NVDA',
+    name: 'NVIDIA Corporation',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'T',
-    description: 'AT&T Inc.',
-    displaySymbol: 'T',
+    symbol: 'JPM',
+    name: 'JPMorgan Chase & Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'VZ',
-    description: 'Verizon Communications Inc.',
-    displaySymbol: 'VZ',
+    symbol: 'BAC',
+    name: 'Bank of America Corporation',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'MCD',
-    description: "McDonald's Corporation",
-    displaySymbol: 'MCD',
+    symbol: 'WMT',
+    name: 'Walmart Inc.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'KO',
-    description: 'The Coca-Cola Company',
-    displaySymbol: 'KO',
+    symbol: 'PG',
+    name: 'Procter & Gamble Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'IBM',
-    description: 'International Business Machines Corporation',
-    displaySymbol: 'IBM',
+    symbol: 'DIS',
+    name: 'Walt Disney Co.',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'SBUX',
-    description: 'Starbucks Corporation',
-    displaySymbol: 'SBUX',
+    symbol: 'NFLX',
+    name: 'Netflix, Inc.',
+    exchange: 'NASDAQ',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNGS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'GE',
-    description: 'General Electric Company',
-    displaySymbol: 'GE',
+    symbol: 'XOM',
+    name: 'Exxon Mobil Corporation',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
   {
-    symbol: 'QCOM',
-    description: 'QUALCOMM Incorporated',
-    displaySymbol: 'QCOM',
+    symbol: 'JNJ',
+    name: 'Johnson & Johnson',
+    exchange: 'NYSE',
     currency: 'USD',
-    figi: '',
-    mic: '',
-    type: 'Common Stock',
-  },
-  {
-    symbol: 'BA',
-    description: 'The Boeing Company',
-    displaySymbol: 'BA',
-    currency: 'USD',
-    figi: '',
-    mic: '',
-    type: 'Common Stock',
-  },
-  {
-    symbol: 'SPCE',
-    description: 'Virgin Galactic Holdings, Inc.',
-    displaySymbol: 'SPCE',
-    currency: 'USD',
-    figi: '',
-    mic: '',
-    type: 'Common Stock',
-  },
-  {
-    symbol: 'AMC',
-    description: 'AMC Entertainment Holdings, Inc.',
-    displaySymbol: 'AMC',
-    currency: 'USD',
-    figi: '',
-    mic: '',
-    type: 'Common Stock',
-  },
-  {
-    symbol: 'GME',
-    description: 'GameStop Corp.',
-    displaySymbol: 'GME',
-    currency: 'USD',
-    figi: '',
-    mic: '',
-    type: 'Common Stock',
-  },
-  {
-    symbol: 'F',
-    description: 'Ford Motor Company',
-    displaySymbol: 'F',
-    currency: 'USD',
-    figi: '',
-    mic: '',
-    type: 'Common Stock',
-  },
-  {
-    symbol: 'AAL',
-    description: 'American Airlines Group Inc.',
-    displaySymbol: 'AAL',
-    currency: 'USD',
-    figi: '',
-    mic: '',
+    mic_code: 'XNYS',
+    country: 'United States',
     type: 'Common Stock',
   },
 ]
 
-const BASE_PRICES: Record<string, number> = {
-  AAPL: 175.5,
-  MSFT: 350.0,
-  GOOGL: 140.0,
-  AMZN: 130.0,
-  META: 320.0,
-  TSLA: 240.0,
-  NVDA: 450.0,
-  JPM: 145.0,
-  BAC: 33.0,
-  WMT: 60.0,
-  PG: 155.0,
-  DIS: 90.0,
-  NFLX: 430.0,
-  XOM: 105.0,
-  JNJ: 150.0,
-  V: 260.0,
-  MA: 435.0,
-  PFE: 28.0,
-  CSCO: 48.0,
-  INTC: 42.0,
-  CRM: 225.0,
-  AMD: 120.0,
-  PYPL: 65.0,
-  ADBE: 480.0,
-  COST: 550.0,
-  NKE: 95.0,
-  UNH: 490.0,
-  T: 18.0,
-  VZ: 40.0,
-  MCD: 280.0,
-  KO: 60.0,
-  IBM: 145.0,
-  SBUX: 95.0,
-  GE: 120.0,
-  QCOM: 150.0,
-  BA: 190.0,
-  SPCE: 25.0,
-  AMC: 8.0,
-  GME: 20.0,
-  F: 12.0,
-  AAL: 15.0,
-}
-
-const STOCK_TRENDS: Record<string, number> = {
-  AAPL: 1,
-  MSFT: 1,
-  GOOGL: 1,
-  AMZN: 1,
-  META: -1,
-  TSLA: 1,
-  NVDA: 1,
-  JPM: -1,
-  BAC: -1,
-  WMT: 1,
-  PG: -1,
-  DIS: 1,
-  NFLX: -1,
-  XOM: 1,
-  JNJ: -1,
-  V: 1,
-  MA: 1,
-  PFE: -1,
-  CSCO: -1,
-  INTC: -1,
-  CRM: 1,
-  AMD: 1,
-  PYPL: -1,
-  ADBE: 1,
-  COST: 1,
-  NKE: -1,
-  UNH: 1,
-  T: -1,
-  VZ: -1,
-  MCD: 1,
-  KO: 1,
-  IBM: -1,
-  SBUX: 1,
-  GE: -1,
-  QCOM: 1,
-  BA: -1,
-  SPCE: -1,
-  AMC: -1,
-  GME: -1,
-  F: 1,
-  AAL: -1,
-}
-
-function generateRandomChange(
-  basePrice: number,
-  symbol: string
-): {
-  price: number
-  change: number
-  percentChange: number
-} {
-  const trend = STOCK_TRENDS[symbol] || (Math.random() > 0.5 ? 1 : -1)
-  const maxChange = basePrice * 0.02
-  const trendBias = trend * 0.005 * basePrice
-  const randomComponent = Math.random() * maxChange * 2 - maxChange
-  const change = randomComponent + trendBias
-  const price = parseFloat((basePrice + change).toFixed(2))
-  const percentChange = parseFloat(
-    ((change / basePrice) * 100).toFixed(2)
-  )
-  return {
-    price,
-    change,
-    percentChange,
+const STOCK_DATA: Record<string, {basePrice: number; trend: 1 | -1}> =
+  {
+    AAPL: {basePrice: 175.5, trend: 1},
+    MSFT: {basePrice: 350.0, trend: 1},
+    GOOGL: {basePrice: 140.0, trend: 1},
+    AMZN: {basePrice: 130.0, trend: 1},
+    META: {basePrice: 320.0, trend: -1},
+    TSLA: {basePrice: 240.0, trend: 1},
+    NVDA: {basePrice: 450.0, trend: 1},
+    JPM: {basePrice: 145.0, trend: -1},
+    BAC: {basePrice: 33.0, trend: -1},
+    WMT: {basePrice: 60.0, trend: 1},
+    PG: {basePrice: 155.0, trend: -1},
+    DIS: {basePrice: 90.0, trend: 1},
+    NFLX: {basePrice: 430.0, trend: -1},
+    XOM: {basePrice: 105.0, trend: 1},
+    JNJ: {basePrice: 150.0, trend: -1},
   }
-}
 
-export async function fetchStockQuote(
+export async function fetchStockQuoteMock(
   symbol: string
 ): Promise<StockQuote> {
   await new Promise((resolve) =>
     setTimeout(resolve, Math.random() * 200)
   )
-  const basePrice = BASE_PRICES[symbol] || 100 + Math.random() * 200
-  const now = Date.now()
 
-  const prevPrice = basePrice
-  const {price, change, percentChange} = generateRandomChange(
-    prevPrice,
-    symbol
+  const stockInfo = MOCK_STOCKS.find(
+    (stock) => stock.symbol === symbol
+  ) || {
+    symbol: symbol,
+    name: `${symbol} Inc.`,
+    exchange: 'NASDAQ',
+    currency: 'USD',
+    mic_code: 'XNGS',
+    country: 'United States',
+    type: 'Common Stock',
+  }
+
+  const data = STOCK_DATA[symbol] || {
+    basePrice: 100,
+    trend: Math.random() > 0.5 ? 1 : -1,
+  }
+  const basePrice = data.basePrice
+  const now = new Date()
+  const today = now.toISOString().split('T')[0] // YYYY-MM-DD
+
+  const maxChange = basePrice * 0.02
+  const trendFactor = data.trend * 0.005 * basePrice
+  const randomComponent = Math.random() * maxChange * 2 - maxChange
+  const change = parseFloat(
+    (randomComponent + trendFactor).toFixed(2)
   )
+  const percentChange = parseFloat(
+    ((change / basePrice) * 100).toFixed(2)
+  )
+
+  const close = parseFloat((basePrice + change).toFixed(2))
+  const open = parseFloat(
+    (basePrice + (Math.random() * 2 - 1)).toFixed(2)
+  )
+  const high = parseFloat(
+    (
+      Math.max(close, open) +
+      Math.random() * basePrice * 0.01
+    ).toFixed(2)
+  )
+  const low = parseFloat(
+    (
+      Math.min(close, open) -
+      Math.random() * basePrice * 0.01
+    ).toFixed(2)
+  )
+
   return {
-    c: price,
-    d: change,
-    dp: percentChange,
-    h: price + Math.random() * basePrice * 0.01,
-    l: price - Math.random() * basePrice * 0.01,
-    o: prevPrice,
-    pc: prevPrice,
-    t: now,
+    symbol: stockInfo.symbol,
+    name: stockInfo.name,
+    exchange: stockInfo.exchange,
+    mic_code: stockInfo.mic_code,
+    currency: stockInfo.currency,
+    datetime: today,
+    timestamp: Math.floor(now.getTime() / 1000),
+    open: open,
+    high: high,
+    low: low,
+    close: close,
+    volume: Math.floor(100000 + Math.random() * 10000000),
+    previous_close: basePrice,
+    change: change,
+    percent_change: percentChange,
+    is_market_open:
+      now.getHours() >= 9 &&
+      now.getHours() < 16 &&
+      now.getDay() >= 1 &&
+      now.getDay() <= 5,
   }
 }
 
-export async function getStockSymbols(): Promise<StockSymbol[]> {
+export async function getStockSymbolsMock(): Promise<StockSymbol[]> {
   await new Promise((resolve) =>
     setTimeout(resolve, Math.random() * 300 + 100)
   )
   return [...MOCK_STOCKS]
 }
 
-export async function fetchHistoricalData(
+export async function fetchHistoricalDataMock(
   symbol: string
 ): Promise<CandleData> {
   await new Promise((resolve) =>
     setTimeout(resolve, Math.random() * 400 + 200)
   )
-  const basePrice = BASE_PRICES[symbol] || 100
-  const trend = STOCK_TRENDS[symbol] || (Math.random() > 0.5 ? 1 : -1)
-  const days = 30
+
+  const data = STOCK_DATA[symbol] || {
+    basePrice: 100,
+    trend: Math.random() > 0.5 ? 1 : -1,
+  }
+  const basePrice = data.basePrice
+  const trend = data.trend
+
+  const values = []
   const now = new Date()
-  const timestamps: number[] = []
-  const opens: number[] = []
-  const highs: number[] = []
-  const lows: number[] = []
-  const closes: number[] = []
-  const volumes: number[] = []
   let currentPrice = basePrice
-  for (let i = days - 1; i >= 0; i--) {
+
+  for (let i = 30; i >= 0; i--) {
     const date = new Date(now)
     date.setDate(date.getDate() - i)
-    if (date.getDay() === 0 || date.getDay() === 6) {
-      continue
-    }
-    timestamps.push(Math.floor(date.getTime() / 1000))
+
+    if (date.getDay() === 0 || date.getDay() === 6) continue
+
     const volatility = 0.02
     const trendBias = trend * 0.005
     const dayChange =
       (Math.random() * 2 - 1 + trendBias) * volatility * basePrice
-    currentPrice += dayChange
-    currentPrice = Math.max(currentPrice, basePrice * 0.5)
-    const open = currentPrice - dayChange / 2
-    const close = currentPrice
-    const high =
-      Math.max(open, close) + Math.random() * basePrice * 0.01
-    const low =
-      Math.min(open, close) - Math.random() * basePrice * 0.01
-    opens.push(parseFloat(open.toFixed(2)))
-    highs.push(parseFloat(high.toFixed(2)))
-    lows.push(parseFloat(low.toFixed(2)))
-    closes.push(parseFloat(close.toFixed(2)))
-    const volume = Math.floor(1000000 + Math.random() * 10000000)
-    volumes.push(volume)
+
+    currentPrice = Math.max(currentPrice + dayChange, basePrice * 0.5)
+
+    const open = parseFloat((currentPrice - dayChange / 2).toFixed(2))
+    const close = parseFloat(currentPrice.toFixed(2))
+    const high = parseFloat(
+      (
+        Math.max(open, close) +
+        Math.random() * basePrice * 0.01
+      ).toFixed(2)
+    )
+    const low = parseFloat(
+      (
+        Math.min(open, close) -
+        Math.random() * basePrice * 0.01
+      ).toFixed(2)
+    )
+    const volume = Math.floor(10000 + Math.random() * 1000000)
+
+    const datetime = date.toISOString().split('T')[0]
+
+    values.push({
+      datetime: datetime,
+      open: open,
+      high: high,
+      low: low,
+      close: close,
+      volume: volume,
+    })
   }
+
+  values.sort(
+    (a, b) =>
+      new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+  )
+
   return {
-    c: closes,
-    h: highs,
-    l: lows,
-    o: opens,
-    s: 'ok',
-    t: timestamps,
-    v: volumes,
+    meta: {
+      symbol: symbol,
+      interval: '1month',
+      currency: 'USD',
+      exchange_timezone: 'America/New_York',
+      exchange: 'NASDAQ',
+      mic_code: 'XNGS',
+      type: 'Common Stock',
+    },
+    values: values,
+    status: 'ok',
   }
 }
 
-export async function searchStocks(
+export async function fetchRSIMock(symbol: string): Promise<RSIData> {
+  await new Promise((resolve) =>
+    setTimeout(resolve, Math.random() * 300 + 100)
+  )
+
+  const data = STOCK_DATA[symbol] || {
+    basePrice: 100,
+    trend: Math.random() > 0.5 ? 1 : -1,
+  }
+  const trend = data.trend
+
+  const candles = await fetchHistoricalDataMock(symbol)
+
+  const baseRsi = trend > 0 ? 60 : 40
+
+  const values = candles.values.map((candle) => {
+    const randomFactor = Math.random() * 20 - 10
+    const rsi = parseFloat((baseRsi + randomFactor).toFixed(2))
+
+    return {
+      datetime: candle.datetime,
+      rsi: Math.max(0, Math.min(100, rsi)),
+    }
+  })
+
+  return {
+    meta: {
+      symbol: symbol,
+      interval: '1month',
+      indicator: {
+        name: 'RSI - Relative Strength Index',
+        series_type: 'close',
+        time_period: 10,
+      },
+    },
+    values: values,
+    status: 'ok',
+  }
+}
+
+export async function fetchMACDMock(
+  symbol: string
+): Promise<MACDData> {
+  await new Promise((resolve) =>
+    setTimeout(resolve, Math.random() * 300 + 100)
+  )
+
+  const data = STOCK_DATA[symbol] || {
+    basePrice: 100,
+    trend: Math.random() > 0.5 ? 1 : -1,
+  }
+  const trend = data.trend
+
+  const candles = await fetchHistoricalDataMock(symbol)
+
+  const baseMacd = trend
+
+  const values = candles.values.map((candle) => {
+    const macd = parseFloat(
+      (baseMacd + (Math.random() * 2 - 1)).toFixed(4)
+    )
+    const signal = parseFloat(
+      (macd - trend * 0.2 + (Math.random() * 0.4 - 0.2)).toFixed(4)
+    )
+    const hist = parseFloat((macd - signal).toFixed(4))
+
+    return {
+      datetime: candle.datetime,
+      macd: macd,
+      macd_signal: signal,
+      macd_hist: hist,
+    }
+  })
+
+  return {
+    meta: {
+      symbol: symbol,
+      interval: '1month',
+      indicator: {
+        name: 'MACD - Moving Average Convergence Divergence',
+        fast_period: 12,
+        series_type: 'close',
+        signal_period: 9,
+        slow_period: 26,
+      },
+    },
+    values: values,
+    status: 'ok',
+  }
+}
+
+export async function searchStocksMock(
   keywords: string
 ): Promise<StockSymbol[]> {
   await new Promise((resolve) =>
-    setTimeout(resolve, Math.random() * 300)
+    setTimeout(resolve, Math.random() * 200)
   )
+
   const lowerQuery = keywords.toLowerCase()
   return MOCK_STOCKS.filter(
     (stock) =>
       stock.symbol.toLowerCase().includes(lowerQuery) ||
-      stock.description.toLowerCase().includes(lowerQuery)
+      stock.name.toLowerCase().includes(lowerQuery)
   )
-}
-
-export async function getMarketTrend(): Promise<{
-  up: number
-  down: number
-  unchanged: number
-}> {
-  await new Promise((resolve) =>
-    setTimeout(resolve, Math.random() * 200)
-  )
-  const up = Object.values(STOCK_TRENDS).filter((t) => t > 0).length
-  const down = Object.values(STOCK_TRENDS).filter((t) => t < 0).length
-  const unchanged = Object.values(STOCK_TRENDS).filter(
-    (t) => t === 0
-  ).length
-  return {up, down, unchanged}
 }

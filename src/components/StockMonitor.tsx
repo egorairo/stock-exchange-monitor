@@ -4,14 +4,13 @@ import React, {useState} from 'react'
 import {StockList} from './StockList'
 import {StockChart} from './StockChart'
 import {useStocks} from '@/lib/hooks/useStocks'
-import {StockListSkeleton} from './skeletons/StockListSkeleton'
 
 interface StockMonitorProps {
   refreshInterval?: number
 }
 
 export const StockMonitor: React.FC<StockMonitorProps> = ({
-  refreshInterval = 20000,
+  refreshInterval = 60000,
 }) => {
   const {
     stocks,
@@ -27,7 +26,6 @@ export const StockMonitor: React.FC<StockMonitorProps> = ({
     setPageSize,
   } = useStocks(refreshInterval)
 
-  // State for selected stock
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(
     stocks.length > 0 ? stocks[0].symbol : null
   )
@@ -51,27 +49,23 @@ export const StockMonitor: React.FC<StockMonitorProps> = ({
       </h1>
 
       <div className="flex flex-col lg:flex-row gap-8 w-full">
-        <div className="w-full lg:max-w-[480px] h-full">
+        <div className="w-full lg:max-w-[500px] h-full">
           <div className="stock-card p-4 h-full">
-            {loading ? (
-              <StockListSkeleton />
-            ) : (
-              <StockList
-                stocks={stocks}
-                loading={loading}
-                error={error}
-                filter={filter}
-                onFilterChange={setFilter}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                onRefresh={refreshStocks}
-                selectedSymbol={selectedSymbol}
-                onSelectStock={handleStockSelect}
-                pagination={pagination}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-              />
-            )}
+            <StockList
+              stocks={stocks}
+              loading={loading}
+              error={error}
+              filter={filter}
+              onFilterChange={setFilter}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onRefresh={refreshStocks}
+              selectedSymbol={selectedSymbol}
+              onSelectStock={handleStockSelect}
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
           </div>
         </div>
 

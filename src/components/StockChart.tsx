@@ -4,7 +4,6 @@ import React, {useMemo} from 'react'
 import {useStockChart} from '@/lib/hooks/useStockChart'
 import {StockChartSkeleton} from './skeletons/StockChartSkeleton'
 import dynamic from 'next/dynamic'
-import Highcharts from 'highcharts'
 
 const HighchartsWrapper = dynamic(
   () => import('./HighchartsWrapper'),
@@ -16,59 +15,91 @@ const HighchartsWrapper = dynamic(
 
 interface StockChartProps {
   symbol: string
+  interval?: string
 }
 
-export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
-  const {chartData, loading, error} = useStockChart(symbol)
+export const StockChart: React.FC<StockChartProps> = ({
+  symbol,
+  interval = '1month',
+}) => {
+  const {chartData, loading, error} = useStockChart(symbol, interval)
 
   const candlestickData = useMemo(() => {
     if (!chartData || chartData.length === 0) return []
 
-    return chartData.map((point) => {
-      const dateParts = point.date.split('/')
-      const dateObj = new Date(
-        parseInt(dateParts[2]),
-        parseInt(dateParts[0]) - 1,
-        parseInt(dateParts[1])
-      )
-
-      return [
-        dateObj.getTime(),
-        point.open || point.price,
-        point.high || point.price,
-        point.low || point.price,
-        point.price,
-      ]
-    })
+    return chartData.map((point) => [
+      point.timestamp,
+      point.open,
+      point.high,
+      point.low,
+      point.close,
+    ])
   }, [chartData])
 
   const volumeData = useMemo(() => {
     if (!chartData || chartData.length === 0) return []
 
-    return chartData.map((point) => {
-      const dateParts = point.date.split('/')
-      const dateObj = new Date(
-        parseInt(dateParts[2]),
-        parseInt(dateParts[0]) - 1,
-        parseInt(dateParts[1])
-      )
+    return chartData.map((point) => [point.timestamp, point.volume])
+  }, [chartData])
 
-      return [dateObj.getTime(), point.volume || 0]
-    })
+  const rsiData = useMemo(() => {
+    if (!chartData || chartData.length === 0) return []
+
+    return chartData
+      .map((point) => [point.timestamp, point.rsi])
+      .filter((item) => item[1] !== undefined)
+  }, [chartData])
+
+  const macdData = useMemo(() => {
+    if (!chartData || chartData.length === 0) return []
+
+    return chartData
+      .map((point) => [point.timestamp, point.macd])
+      .filter((item) => item[1] !== undefined)
+  }, [chartData])
+
+  const signalData = useMemo(() => {
+    if (!chartData || chartData.length === 0) return []
+
+    return chartData
+      .map((point) => [point.timestamp, point.macd_signal])
+      .filter((item) => item[1] !== undefined)
+  }, [chartData])
+
+  const histogramData = useMemo(() => {
+    if (!chartData || chartData.length === 0) return []
+
+    return chartData
+      .map((point) => [point.timestamp, point.macd_hist])
+      .filter((item) => item[1] !== undefined)
   }, [chartData])
 
   const options = useMemo(() => {
     return {
       chart: {
-        height: '100%',
+        height: '95%',
         style: {
           fontFamily: 'Inter, system-ui, sans-serif',
         },
       },
 
+      time: {
+        useUTC: false,
+      },
+
       rangeSelector: {
-        selected: 6,
+        selected: 2,
         buttons: [
+          {
+            type: 'hour',
+            count: 1,
+            text: '1h',
+          },
+          {
+            type: 'day',
+            count: 1,
+            text: '1d',
+          },
           {
             type: 'week',
             count: 1,
@@ -78,24 +109,6 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
             type: 'month',
             count: 1,
             text: '1m',
-          },
-          {
-            type: 'month',
-            count: 3,
-            text: '3m',
-          },
-          {
-            type: 'month',
-            count: 6,
-            text: '6m',
-          },
-          {
-            type: 'ytd',
-            text: 'YTD',
-          },
-          {
-            type: 'all',
-            text: 'All',
           },
         ],
       },
@@ -118,11 +131,6 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
 
       xAxis: {
         type: 'datetime',
-        labels: {
-          formatter: function () {
-            return Highcharts.dateFormat('%b %e', this.value)
-          },
-        },
       },
 
       yAxis: [
@@ -165,6 +173,8 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
           height: '15%',
           offset: 0,
           lineWidth: 2,
+          min: 0,
+          max: 100,
           plotLines: [
             {
               value: 30,
@@ -216,9 +226,6 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
           upLineColor: '#4db379',
           color: '#db4d4d',
           lineColor: '#db4d4d',
-          dataGrouping: {
-            units: [['day', [1]]],
-          },
         },
         {
           type: 'column',
@@ -226,51 +233,41 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
           data: volumeData,
           yAxis: 1,
           color: '#6f86d6',
-          dataGrouping: {
-            units: [['day', [1]]],
-          },
         },
         {
-          type: 'rsi',
+          type: 'line',
           name: 'RSI',
-          linkedTo: 'main',
+          data: rsiData,
           yAxis: 2,
-          params: {
-            period: 14,
-          },
           color: '#ff9800',
           lineWidth: 2,
         },
         {
-          type: 'macd',
+          type: 'line',
           name: 'MACD',
-          linkedTo: 'main',
+          data: macdData,
           yAxis: 3,
-          params: {
-            shortPeriod: 12,
-            longPeriod: 26,
-            signalPeriod: 9,
-          },
-          macdLine: {
-            styles: {
-              lineColor: '#0088ff',
-              lineWidth: 2,
-            },
-          },
-          signalLine: {
-            styles: {
-              lineColor: '#ff0000',
-              lineWidth: 1,
-            },
-          },
-          threshold: {
-            styles: {
-              lineColor: '#aaaaaa',
-              lineWidth: 1,
-            },
-          },
+          color: '#0088ff',
+          lineWidth: 2,
+        },
+        {
+          type: 'line',
+          name: 'Signal',
+          data: signalData,
+          yAxis: 3,
+          color: '#ff0000',
+          lineWidth: 1,
+          dashStyle: 'shortdash',
+        },
+        {
+          type: 'column',
+          name: 'Histogram',
+          data: histogramData,
+          yAxis: 3,
+          color: '#aaaaaa',
         },
       ],
+
       responsive: {
         rules: [
           {
@@ -294,7 +291,15 @@ export const StockChart: React.FC<StockChartProps> = ({symbol}) => {
         enabled: false,
       },
     }
-  }, [symbol, candlestickData, volumeData])
+  }, [
+    symbol,
+    candlestickData,
+    volumeData,
+    rsiData,
+    macdData,
+    signalData,
+    histogramData,
+  ])
 
   if (loading) {
     return <StockChartSkeleton />

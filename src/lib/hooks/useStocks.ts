@@ -1,83 +1,73 @@
 'use client'
 
-import {useState, useEffect, useMemo, useCallback} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import {Stock, StockFilter} from '../types/stock'
-import {
-  getStockSymbols,
-  fetchStockQuote,
-} from '../services/alphaVantageService'
-
-function mapToStock(
-  symbol: string,
-  description: string,
-  quote: any
-): Stock | null {
-  if (!symbol || !quote) {
-    console.warn('Invalid stock data format')
-    return null
-  }
-
-  return {
-    symbol,
-    description: description || symbol,
-    currentPrice: quote.c || 0,
-    previousClose: quote.pc || 0,
-    openPrice: quote.o || 0,
-    priceChange: quote.d || 0,
-    percentChange: quote.dp || 0,
-    isGrowing: quote.c > quote.o,
-  }
-}
 
 export function useStocks(
-  updateInterval = 20000,
+  updateInterval = 60 * 1000,
   initialPage = 1,
-  initialPageSize = 20
+  initialPageSize = 10,
+  searchDebounceMs = 300 // Debounce delay for search
 ) {
   const [filter, setFilter] = useState<StockFilter>(StockFilter.ALL)
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [inputSearchQuery, setInputSearchQuery] = useState<string>('')
+  const [debouncedSearchQuery, setDebouncedSearchQuery] =
+    useState<string>('')
 
-  const [page, setPage] = useState<number>(initialPage)
-  const [pageSize, setPageSizeState] =
-    useState<number>(initialPageSize)
+  const [currentPage, setCurrentPage] = useState<number>(initialPage)
+  const [pageSize, setPageSize] = useState<number>(initialPageSize)
 
   const [stocks, setStocks] = useState<Stock[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [totalStocks, setTotalStocks] = useState<number>(0)
+  const [paginationData, setPaginationData] = useState({
+    totalItems: 0,
+    totalPages: 1,
+    currentPage: initialPage,
+    pageSize: initialPageSize,
+  })
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(inputSearchQuery)
+    }, searchDebounceMs)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [inputSearchQuery, searchDebounceMs])
 
   const fetchStocksData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
 
-      const symbols = await getStockSymbols()
-      setTotalStocks(symbols.length)
+      const url = new URL('/api/stocks', window.location.origin)
+      url.searchParams.append('page', currentPage.toString())
+      url.searchParams.append('pageSize', pageSize.toString())
 
-      const startIndex = (page - 1) * pageSize
-      const endIndex = Math.min(startIndex + pageSize, symbols.length)
-      const pageSymbols = symbols.slice(startIndex, endIndex)
+      if (filter !== StockFilter.ALL) {
+        url.searchParams.append('filter', filter)
+      }
 
-      const stocksPromises = pageSymbols.map(async (symbolInfo) => {
-        try {
-          const quote = await fetchStockQuote(symbolInfo.symbol)
-          return mapToStock(
-            symbolInfo.symbol,
-            symbolInfo.description,
-            quote
-          )
-        } catch (err) {
-          console.error(
-            `Error fetching quote for ${symbolInfo.symbol}:`,
-            err
-          )
-          return null
-        }
-      })
+      if (debouncedSearchQuery) {
+        url.searchParams.append('search', debouncedSearchQuery)
+      }
 
-      const stocksData = await Promise.all(stocksPromises)
+      const response = await fetch(url.toString())
 
-      setStocks(stocksData.filter(Boolean) as Stock[])
+      if (!response.ok) {
+        throw new Error('Failed to fetch stocks from API')
+      }
+
+      const data = await response.json()
+
+      if (!data.stocks || !Array.isArray(data.stocks)) {
+        throw new Error('Invalid data format received from API')
+      }
+
+      setStocks(data.stocks)
+      setPaginationData(data.pagination)
       setLoading(false)
     } catch (err) {
       console.error('Error loading stock data:', err)
@@ -88,7 +78,11 @@ export function useStocks(
       )
       setLoading(false)
     }
-  }, [page, pageSize])
+  }, [currentPage, pageSize, filter, debouncedSearchQuery])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter, debouncedSearchQuery])
 
   useEffect(() => {
     fetchStocksData()
@@ -101,68 +95,41 @@ export function useStocks(
     return () => {
       if (intervalId) clearInterval(intervalId)
     }
-  }, [page, pageSize, updateInterval, fetchStocksData])
-
-  const filteredStocks = useMemo(() => {
-    return stocks.filter((stock) => {
-      const matchesFilter =
-        filter === StockFilter.ALL ||
-        (filter === StockFilter.GROWING && stock.isGrowing) ||
-        (filter === StockFilter.FALLING && !stock.isGrowing)
-
-      const matchesSearch =
-        !searchQuery ||
-        stock.symbol
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        stock.description
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-
-      return matchesFilter && matchesSearch
-    })
-  }, [stocks, filter, searchQuery])
-
-  const pagination = useMemo(() => {
-    return {
-      totalItems: totalStocks,
-      totalPages: Math.ceil(totalStocks / pageSize),
-      currentPage: page,
-      pageSize: pageSize,
-    }
-  }, [totalStocks, page, pageSize])
+  }, [
+    currentPage,
+    pageSize,
+    filter,
+    debouncedSearchQuery,
+    fetchStocksData,
+    updateInterval,
+  ])
 
   const goToPage = useCallback(
     (newPage: number) => {
-      if (newPage >= 1 && newPage <= pagination.totalPages) {
-        setPage(newPage)
+      if (newPage >= 1 && newPage <= paginationData.totalPages) {
+        setCurrentPage(newPage)
       }
     },
-    [pagination.totalPages]
+    [paginationData.totalPages]
   )
 
-  const handlePageSizeChange = useCallback(
-    (newPageSize: number) => {
-      const firstItemIndex = (page - 1) * pageSize + 1
-      const newPage = Math.ceil(firstItemIndex / newPageSize)
-
-      setPageSizeState(newPageSize)
-      setPage(newPage)
-    },
-    [page, pageSize]
-  )
+  const handlePageSizeChange = useCallback((newPageSize: number) => {
+    setPageSize(newPageSize)
+    setCurrentPage(1)
+  }, [])
 
   return {
-    stocks: filteredStocks,
+    stocks,
     loading,
     error,
     filter,
     setFilter,
-    searchQuery,
-    setSearchQuery,
+    searchQuery: inputSearchQuery,
+    setSearchQuery: setInputSearchQuery,
     refreshStocks: fetchStocksData,
-    pagination,
+    pagination: paginationData,
     goToPage,
     setPageSize: handlePageSizeChange,
+    totalFilteredCount: paginationData.totalItems,
   }
 }

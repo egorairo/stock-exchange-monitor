@@ -1,50 +1,22 @@
 'use client'
 
 import {useState, useEffect, useCallback} from 'react'
-import {fetchHistoricalData} from '../services/alphaVantageService'
-import {
-  calculateRSI,
-  calculateMACD,
-} from '../utils/technicalIndicators'
+import {ChartDataPoint} from '../types/stock'
 
-export function useStockChart(symbol: string | null) {
-  const [chartData, setChartData] = useState<any[]>([])
+interface UseStockChartResult {
+  chartData: ChartDataPoint[]
+  loading: boolean
+  error: string | null
+  refreshChart: () => Promise<void>
+}
+
+export function useStockChart(
+  symbol: string | null,
+  interval: string = '1month'
+): UseStockChartResult {
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-
-  const processChartData = useCallback((data: any) => {
-    if (!data || data.s !== 'ok') {
-      throw new Error('Invalid data format')
-    }
-
-    const simplifiedData = data.t.map(
-      (timestamp: number, index: number) => {
-        const date = new Date(timestamp * 1000)
-        return {
-          date: date.toLocaleDateString(),
-          time: timestamp * 1000, // в миллисекундах для Highcharts
-          open: data.o[index],
-          high: data.h[index],
-          low: data.l[index],
-          close: data.c[index],
-          price: data.c[index],
-          volume: data.v[index],
-        }
-      }
-    )
-
-    const closePrices = data.c
-    const rsiValues = calculateRSI(closePrices)
-    const macdValues = calculateMACD(closePrices)
-
-    return simplifiedData.map((point: any, index: number) => ({
-      ...point,
-      rsi: rsiValues[index] || 0,
-      macd: macdValues.macd[index] || 0,
-      signal: macdValues.signal[index] || 0,
-      histogram: macdValues.histogram[index] || 0,
-    }))
-  }, [])
 
   const fetchData = useCallback(async () => {
     if (!symbol) {
@@ -57,10 +29,24 @@ export function useStockChart(symbol: string | null) {
       setLoading(true)
       setError(null)
 
-      const data = await fetchHistoricalData(symbol)
-      const processedData = processChartData(data)
+      const response = await fetch(
+        `/api/historical?symbol=${symbol}&interval=${interval}`
+      )
 
-      setChartData(processedData)
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(
+          errorData.error || 'Failed to load chart data'
+        )
+      }
+
+      const data = await response.json()
+
+      if (!data.chartData || !Array.isArray(data.chartData)) {
+        throw new Error('Invalid data format received from API')
+      }
+
+      setChartData(data.chartData)
       setLoading(false)
     } catch (err) {
       console.error(`Error fetching chart data for ${symbol}:`, err)
@@ -71,7 +57,7 @@ export function useStockChart(symbol: string | null) {
       )
       setLoading(false)
     }
-  }, [symbol, processChartData])
+  }, [symbol, interval])
 
   useEffect(() => {
     fetchData()
@@ -89,5 +75,6 @@ export function useStockChart(symbol: string | null) {
     chartData,
     loading,
     error,
+    refreshChart: fetchData,
   }
 }
