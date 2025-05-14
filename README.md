@@ -1,6 +1,6 @@
 # Биржевой монитор
 
-Web-приложение для отслеживания котировок акций в реальном времени с помощью [Alpha Vantage API](https://www.alphavantage.co/documentation/).
+Web-приложение для отслеживания котировок акций в реальном времени с помощью [Twelve Data](https://twelvedata.com/docs).
 
 ## Возможности
 
@@ -18,11 +18,10 @@ Web-приложение для отслеживания котировок ак
 - TypeScript
 - Tailwind CSS
 - Highcharts
-- React Paginate
 
 ## Моковые данные
 
-> **Важно: Alpha Vantage API ограничен 25 запросами в день на бесплатном тарифе.**
+> **Важно: Twelve Data API ограничен на бесплатном тарифе.**
 
 Поэтому в проекте реализованы моковые данные:
 
@@ -47,12 +46,12 @@ cd stock-exchange-monitor
 npm install
 ```
 
-3. Получить [api_key](https://www.alphavantage.co/support/#api-key) для Alpha Vantage API
+3. Получить [api_key](https://twelvedata.com/account/api-keys) для Twelve Data
 
 4. Создать .env.local:
 
 ```bash
-NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY=api_key
+NEXT_PUBLIC_TWELVE_DATA_API_KEY=api_key
 NEXT_PUBLIC_USE_MOCKS=true
 ```
 
